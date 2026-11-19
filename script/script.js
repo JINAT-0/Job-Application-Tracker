@@ -57,3 +57,150 @@ function toggleButtons(id) {
     }
 }
 
+const mainContainer = document.querySelector("main");
+
+mainContainer.addEventListener("click", function (event) {
+    if (event.target.classList.contains("interview-btn")) {
+        const parentNode = event.target.parentNode.parentNode;
+        const companyName = parentNode.querySelector(".companyName").innerText;
+        const jobTitle = parentNode.querySelector(".jobTitle").innerText;
+        const jobtype = parentNode.querySelector(".jobtype").innerText;
+        const jobStatus = parentNode.querySelector(".jobStatus").innerText;
+        const jobDescription = parentNode.querySelector(".jobDescription").innerText;
+
+        const cardInfo = {
+            companyName,
+            jobTitle,
+            jobtype,
+            jobStatus,
+            jobDescription,
+        };
+
+        const companyExist = interviewList.find((item) => item.companyName == cardInfo.companyName);
+        parentNode.querySelector(".jobStatus").innerHTML = `<p class="jobStatus "><span class="text-green-500 border rounded-sm py-2 px-3">INTERVIEW</span></p>`;
+        if (!companyExist) {
+            interviewList.push(cardInfo);
+        }
+        rejectedList = rejectedList.filter((item) => item.companyName != cardInfo.companyName);
+        if (currentStatus == "rejected-filter-btn") {
+            renderRejectSection();
+        }
+    } else if (event.target.classList.contains("rejected-btn")) {
+        const parentNode = event.target.parentNode.parentNode;
+        const companyName = parentNode.querySelector(".companyName").innerText;
+        const jobTitle = parentNode.querySelector(".jobTitle").innerText;
+        const jobtype = parentNode.querySelector(".jobtype").innerText;
+        const jobStatus = parentNode.querySelector(".jobStatus").innerText;
+        const jobDescription = parentNode.querySelector(".jobDescription").innerText;
+
+        const cardInfo = {
+            companyName,
+            jobTitle,
+            jobtype,
+            jobStatus,
+            jobDescription,
+        };
+
+        const companyExist = rejectedList.find((item) => item.companyName == cardInfo.companyName);
+        parentNode.querySelector(".jobStatus").innerHTML = `<p class="jobStatus "><span class="text-red-500 border rounded-sm py-2 px-3">REJECTED</span></p>`;
+        if (!companyExist) {
+            rejectedList.push(cardInfo);
+        }
+        interviewList = interviewList.filter((item) => item.companyName != cardInfo.companyName);
+        if (currentStatus == "interview-filter-btn") {
+            renderInterviewSection();
+        }
+    } else if(event.target.closest(".btn-delete")){
+        // deletes the clicked button card
+        event.target.parentNode.parentNode.parentNode.remove();
+        const jobCard = event.target.parentNode.parentNode.parentNode;
+        const companyName = jobCard.querySelector('.companyName').innerText
+        console.log(companyName)
+        interviewList = interviewList.filter((item) => item.companyName != companyName);
+        rejectedList = rejectedList.filter((item) => item.companyName != companyName);
+
+    }
+    countCalculator();
+});
+
+function renderInterviewSection() {
+    sectionJobCount.innerText = interviewList.length + "of";
+    filteredSection.innerHTML = "";
+    if (interviewList.length == 0) {
+        let div = document.createElement("div");
+        div.className = "job-card p-6 bg-white rounded-xl shadow";
+        div.innerHTML = `
+        <div class="flex justify-center pt-28 pb-5">
+            <img src="./assets/jobs.png" alt="">
+        </div>
+        <h2 class="text-center font-semibold text-xl mb-1">No jobs available</h2>
+        <p class="text-center mb-28 text-[#64748B]">Check back soon for new job opportunities</p>
+
+        `;
+        filteredSection.appendChild(div);
+    } else {
+        for (item of interviewList) {
+            let div = document.createElement("div");
+            div.className = "job-card p-6 flex justify-between bg-white rounded-xl shadow";
+            div.innerHTML = `
+        <div>
+            <h2 class="companyName font-semibold text-xl mb-1">${item.companyName}</h2>
+            <p class="jobTitle text-[#64748B]">${item.jobTitle}</p>
+            <p class="jobtype text-gray-400 my-5">${item.jobtype}</p>
+            <p class="jobStatus "><span class="text-green-500 border rounded-sm py-2 px-3">INTERVIEW</span></p>
+            <p class="jobDescription text-gray-600 mt-3">${item.jobDescription}</p>
+            <div class="mt-5 flex gap-3">
+                <button class="cursor-pointer interview-btn text-green-500 py-2 px-3 border rounded-sm">INTERVIEW</button>
+                <button class="cursor-pointer rejected-btn text-red-500 py-2 px-3 border rounded-sm">REJECTED</button>
+            </div>
+
+        </div>
+        <div>
+            <button class="btn-delete cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
+        </div>
+        `;
+            filteredSection.appendChild(div);
+        }
+    }
+}
+
+function renderRejectSection() {
+    sectionJobCount.innerText = rejectedList.length + "of";
+    filteredSection.innerHTML = "";
+    if (rejectedList.length == 0) {
+        let div = document.createElement("div");
+        div.className = "job-card p-6 bg-white rounded-xl shadow";
+        div.innerHTML = `
+        <div class="flex justify-center pt-28 pb-5">
+            <img src="./assets/jobs.png" alt="">
+        </div>
+        <h2 class="text-center font-semibold text-xl mb-1">No jobs available</h2>
+        <p class="text-center mb-28 text-[#64748B]">Check back soon for new job opportunities</p>
+
+        `;
+        filteredSection.appendChild(div);
+    } else {
+        for (item of rejectedList) {
+            let div = document.createElement("div");
+            div.className = "job-card p-6 flex justify-between bg-white rounded-xl shadow";
+            div.innerHTML = `
+        <div>
+            <h2 class="companyName font-semibold text-xl mb-1">${item.companyName}</h2>
+            <p class="jobTitle text-[#64748B]">${item.jobTitle}</p>
+            <p class="jobtype text-gray-400 my-5">${item.jobtype}</p>
+            <p class="jobStatus "><span class="text-red-500 border rounded-sm py-2 px-3">REJECTED</span></p>
+            <p class="jobDescription text-gray-600 mt-3">${item.jobDescription}</p>
+            <div class="mt-5 flex gap-3">
+                <button class="cursor-pointer interview-btn text-green-500 py-2 px-3 border rounded-sm">INTERVIEW</button>
+                <button class="cursor-pointer rejected-btn text-red-500 py-2 px-3 border rounded-sm">REJECTED</button>
+            </div>
+
+        </div>
+        <div>
+            <button class="btn-delete cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
+        </div>
+        `;
+            filteredSection.appendChild(div);
+        }
+    }
+}
